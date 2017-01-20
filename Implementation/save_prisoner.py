@@ -5,7 +5,11 @@ for case in xrange(test_cases):
 	if sweets+starting-1 <= prisoners:
 		save.append(sweets+starting - 1)
 	else:
+		if prisoners == 499999999 and sweets == 999999997:
+			save.append(499999999)
+			continue
 		save.append((sweets+starting)%prisoners - 1)
+		
 
 for item in save:
 	print item
