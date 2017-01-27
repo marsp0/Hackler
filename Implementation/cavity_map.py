@@ -1,5 +1,7 @@
 #!/bin/python
 
+'''https://www.hackerrank.com/challenges/cavity-map'''
+
 import sys
 
 
@@ -26,8 +28,7 @@ for row in row_results:
 	temp = ''
 	while row_results[row]:
 		popped = row_results[row].pop(0)
-		print popped
-		temp += grid[row][len(temp)-1 : popped] + 'X'
+		temp += grid[row][len(temp): popped] + 'X'
 	temp += grid[row][len(temp):]
 	grid[row] = ''.join(temp)
 print
