@@ -1,12 +1,12 @@
-from collections import defaultdict
+'''https://www.hackerrank.com/challenges/almost-sorted'''
 
 n = int(raw_input().strip())
-#array = [int(v) for v in raw_input().strip().split()]
-array = [int(v) for v in open('test.txt','r').read().strip().split()]
+array = [int(v) for v in raw_input().strip().split()]
+#array = [int(v) for v in open('test.txt','r').read().strip().split()]
+
 index = 0
 p1 = -1
 p2 = -1
-
 while index < n:
 	while index < n:
 		try:
@@ -38,14 +38,19 @@ elif p2 - p1 == 1:
 		print 'yes'
 		print 'swap {} {}'.format(p1+1, p2+1)
 	else:
-		print ';ds'
 		print 'no'
 elif p2 - p1 > 1:
-	temp = array[p1:p2+1]
-	temp = sorted(temp)
-	temp_array = array[:p1] + temp + array[p2+1:]
-	if temp_array == sorted(array):
+	array_1 = list(array)
+	array_1[p2], array_1[p1] = array_1[p1], array_1[p2]
+	if sorted(array_1) == array_1:
 		print 'yes'
-		print 'reverse {} {}'.format(p1+1,p2+1)
+		print 'swap {} {}'.format(p1+1, p2+1)
 	else:
-		print 'no'
+		temp = array[p1:p2+1]
+		temp = list(reversed(temp))
+		temp_array = array[:p1] + temp + array[p2+1:]
+		if temp_array == sorted(array):
+			print 'yes'
+			print 'reverse {} {}'.format(p1+1,p2+1)
+		else:
+			print 'no'
