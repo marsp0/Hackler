@@ -1,6 +1,8 @@
 import bisect
 from math import ceil
 
+'''https://www.hackerrank.com/challenges/fraudulent-activity-notifications'''
+
 n , d = [int(v) for v in raw_input().strip().split()]
 #array = [int(v) for v in raw_input().strip().split()]
 array = [int(v) for v in open('test.txt','r').read().split()]
@@ -16,13 +18,13 @@ for index in xrange(d,n):
 
 		first = d_array[len(d_array)/2]
 		second = d_array[len(d_array)/2 - 1]
-		median = (first+second)/2
+		median = (first+second)/2.0
 
 	else:
 		median = d_array[len(d_array)/2]
 		#print len(d_array)/2 , median
 
-	if 2*median <= array[index]:
+	if array[index] >= 2*median:
 		notifs += 1
 
 	to_remove = bisect.bisect(d_array, array[index - d]) - 1
