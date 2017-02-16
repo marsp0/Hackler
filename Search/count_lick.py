@@ -10,17 +10,17 @@ goals = {}
 for test in xrange(tests):
 	n, m = [int(v) for v in raw_input().strip().split()]
 	temp = []
-	for x in xrange(n):
+	for y in xrange(n):
 		row = raw_input().strip().split()
 		try :
 			starts[test]
 		except KeyError:
-			y = row.find('M')
+			x = row.find('M')
 			starts[test] = (x,y)
 		try:
 			goals[test]
 		except KeyError:
-			y = row.find('*')
+			x = row.find('*')
 			goals[test] = (x,y)
 		temp.append(row)
 	impressed[test] = int(raw_input().strip())
