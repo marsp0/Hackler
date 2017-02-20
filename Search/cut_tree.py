@@ -15,7 +15,7 @@ graph = {}
 first_child = None
 second_child = None
 database = {}
-path = {}
+database_sum = {}
 for i in xrange(vertices-1):
 	#inputt = (v for v in raw_input().strip().split())
 	inputt = fish_filet.readline().strip().split()
@@ -39,31 +39,44 @@ for edge in edges:
 		else:
 			second_child = first
 
-def get_sum(graph,start,parent):
-	global database
-	global path
-	summ = graph[start][0]
-	for child in graph[start][1]:
-		try:
-			path[child]
-		except KeyError:
-			if child != parent:
-				path[child] = 0
-				summ += get_sum(graph,child,start)
-	database[start] = summ
-	return summ
+def get_something(graph,start):
+	global database_sum
+	parents = []
+	path = {}
+	for node in graph:
+		if len(graph[node][1]) == 1 and node != 1:
+			database_sum[node] = graph[node][0]
+			if graph[node][1][0] not in parents:
+				parents.append(graph[node][1][0])
+	while parents:
+		print len(parents)
+		node = parents.pop(0)
+		temp = 0
+		current_sum = graph[node][0]
+		for child in graph[node][1]:
+			try:
+				current_sum += database_sum[child]
+			except KeyError:
+				temp += 1
+				try:
+					path[child]
+				except KeyError:
+					parents.append(child)
+					path[child] = 0
+		if temp <= 1:
+			database_sum[node] = current_sum
 
+	database_sum[1] = sum([graph[node][0] for node in graph[1][1]])
 def DFS(graph,start):
-	print '21321321'
 	min_sum = sys.maxsize
 	path = {}
-	global database
+	global database_sum
 	total_sum = sum(values)
 	stack = [start]
 	while len(stack) > 0:
 		node = stack.pop()
-		if min_sum > abs((total_sum - database[node]) - database[node]):
-			min_sum = abs((total_sum - database[node]) - database[node])
+		if min_sum > abs((total_sum - database_sum[node]) - database_sum[node]):
+			min_sum = abs((total_sum - database_sum[node]) - database_sum[node])
 		for edge in graph[node][1]:
 			try:
 				path[edge]
@@ -72,5 +85,6 @@ def DFS(graph,start):
 				path[edge] = 0
 	return min_sum
 
-get_sum(graph,1,None)
+print get_something(graph,1)
+print database_sum[1]
 print DFS(graph,1)
