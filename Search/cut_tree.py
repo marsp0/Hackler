@@ -39,34 +39,44 @@ for edge in edges:
 		else:
 			second_child = first
 
-def get_something(graph,start):
-	global database_sum
-	parents = []
+def get_sum(graph,root):
+	stack = [root]
 	path = {}
-	for node in graph:
-		if len(graph[node][1]) == 1 and node != 1:
+	while stack:
+		print stack
+		print graph[1]
+		print graph[27053]
+		print graph[2900]
+		print graph[38169]
+		print graph[83233]
+		print graph[66738]
+		print graph[41676]
+		print graph[9147]
+		print graph[69077]
+		print
+		print 
+		node = stack[-1]
+		if len(graph[node][1]) == 1:
 			database_sum[node] = graph[node][0]
-			if graph[node][1][0] not in parents:
-				parents.append(graph[node][1][0])
-	while parents:
-		print len(parents)
-		node = parents.pop(0)
-		temp = 0
-		current_sum = graph[node][0]
-		for child in graph[node][1]:
+			stack.pop()
+		else:
 			try:
-				current_sum += database_sum[child]
+				summ = graph[node][0]
+				for index in xrange(1,len(graph[node][1])):
+					summ += database_sum[graph[node][1][index]]
+				database_sum[node] = summ
+				stack.pop()
 			except KeyError:
-				temp += 1
-				try:
-					path[child]
-				except KeyError:
-					parents.append(child)
-					path[child] = 0
-		if temp <= 1:
-			database_sum[node] = current_sum
+				for index in xrange(1,len(graph[node][1])):
+					child = graph[node][1][index]
+					if child not in database_sum and child not in path:
+							stack.append(child)
+							path[child] = 0
+	database_sum[1] = graph[1][0]
+	for index in xrange(len(graph[1][1][1:])):
+		database_sum[1] += database_sum[graph[1][1][index]]
 
-	database_sum[1] = sum([graph[node][0] for node in graph[1][1]])
+
 def DFS(graph,start):
 	min_sum = sys.maxsize
 	path = {}
@@ -84,7 +94,7 @@ def DFS(graph,start):
 				stack.append(edge)
 				path[edge] = 0
 	return min_sum
+graph[1][1].insert(0,None)
+print get_sum(graph,1)
 
-print get_something(graph,1)
-print database_sum[1]
-print DFS(graph,1)
+print database_sum
