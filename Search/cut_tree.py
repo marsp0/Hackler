@@ -91,4 +91,10 @@ def DFS(graph,start):
 
 graph[1][1].insert(0,None)
 get_sum(graph,1)
+print
+for item in graph:
+	print item, ' : ', graph[item]
+print
+for item in database_sum:
+	print item, ' : ', database_sum[item]
 print DFS(graph,1)
