@@ -1,3 +1,5 @@
+'''https://www.hackerrank.com/challenges/journey-to-the-moon'''
+
 # Enter your code here. Read input from STDIN. Print output to STDOUT
 N,l = map(int,raw_input().split())
 graph = {key:[False,[]] for key in xrange(N)}
@@ -27,21 +29,12 @@ for vertex in graph:
 sets = [value for value in results if value != 0]
 sets = list(reversed(sets))
 total = 0
-'''for i in xrange(len(sets)):
-	for j in xrange(i+1,len(sets)):
-		total += sets[i]*sets[j]
-		print total
-print total
-'''
 memo = {}
-for i in xrange(len(sets)):
+for i in xrange(len(sets)-1):
 	if i == 0:
 		memo[0] = sets[0]
 		total += sets[0]*sets[1]
 	else:
 		memo[i] = memo[i-1] + sets[i]
-		total += memo[i]*i+1
-	print total
-	print memo
-print sets
+		total += memo[i]*sets[i+1]
 print total
