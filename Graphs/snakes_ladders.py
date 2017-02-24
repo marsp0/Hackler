@@ -3,6 +3,9 @@
 	We will be using Dijkstra to solve this challenge
 '''
 
+import sys
+from collections import deque
+
 def get_name(row,col):
 	return row*10+col
 
@@ -11,13 +14,12 @@ def get_permission(row,col):
 		return False
 	return row,col
 
-
 graph = {}
 
 for i in xrange(10):
 	for j in xrange(10):
 		vertex = get_name(i,j)
-		graph[vertex] = [(i,j),[]] 
+		graph[vertex] = [(i,j),[],None] 
 
 for vertex in graph:
 	i,j = graph[vertex][0]
@@ -36,12 +38,36 @@ for test in database:
 	n = int(raw_input().strip())
 	for i in xrange(n):
 		a,b = [int(v) for v in raw_input().strip().split()]
-		test[a].append(b)
+		test[a][1].append(b)
 	m = int(raw_input().strip())
 	for j in xrange(m):
 		a,b = [int(v) for v in raw_input().strip().split()]
-		test[a].append(b)
+		test[a][1].append(b)
+
+def get_result(graph):
+	current = 99
+	temp = 0
+	while current != None:
+		temp += 1
+		print graph[current][2]
+		current = graph[current][2]
+	return temp
 
 for test in database:
-	for item in test.items():
-		print item
+	path = {}
+	graph = test
+	queue = deque([(0,None)])
+	while queue:
+		node, parent = queue.popleft()
+		#print graph[node]
+		graph[node][2] = parent
+		#print graph[node]
+		if node == 99:
+			graph[0][2] = None
+			result = get_result(graph)
+		else:
+			for child in graph[node][1]:
+				if child not in path:
+					queue.append((child,node))
+					path[child] = 0
+	print result
