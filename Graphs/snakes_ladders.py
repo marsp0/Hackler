@@ -1,6 +1,22 @@
 '''https://www.hackerrank.com/challenges/the-quickest-way-up/forum 
 	
-	We will be using Dijkstra to solve this challenge
+	We will be using Dijkstra (https://en.wikipedia.org/wiki/Dijkstra's_algorithm) to solve this challenge.
+
+	Outline of what we need to do and how does the algorithm work. 
+
+	The algorithm assigns a ''min'' distance to each vertex, this is the min distance currently processed
+	that allows us to get to that vertex. By continuous relaxation we can get to the optimal path from
+	the source vertex to the destination vertex.
+
+	0. we iterate over the vertices and assign inf as the current min distance. The source has 0 as its min distance
+	1. We create a min queue of all the vertices. As you can imagine the source will be the first node 
+	2. We get the min node and relax all of its edges
+		- check all the outgoing edges
+		- if edge + node value < current assign value to the outgoing vertex
+		- we update the value and bubble up the item in the queue. 
+		NOTE : the hard part is to get the value in the min queue to update it.
+		we will need some kind of index map to keep track of the current position of the indeces in the min queue
+
 '''
 
 import sys
@@ -58,46 +74,3 @@ for index in xrange(len(database)):
 	for value in ladders[index]:
 		database[index][value[0]][1].append(value[1])
 
-def get_result(graph):
-	current = 99
-	lista = []
-	while current != None:
-		lista.append(current)
-		current = graph[current][2]
-	lista = list(reversed(lista))
-	print lista
-	result = 0
-	temp = 0
-	for index in xrange(len(lista)):
-		if index+1 < len(lista):
-			if lista[index+1] - lista[index] == 1:
-				temp += 1
-				if temp == 6:
-					result += 1
-					temp = 0
-			else:
-				result += 1
-				if temp != 0:
-					result += 1
-					temp = 0
-	return result
-
-for test in database:
-	path = {1:0}
-	graph = test
-	print graph
-	queue = deque([(1,None)])
-	while queue:
-		node, parent = queue.popleft()
-		#print node,parent
-		#print graph[node]
-		graph[node][2] = parent
-		#print graph[node]
-		if node == 99:
-			graph[1][2] = None
-			result = get_result(graph)
-		else:
-			for child in graph[node][1]:
-				queue.append((child,node))
-				path[child] = 0
-	print result
