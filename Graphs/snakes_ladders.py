@@ -46,45 +46,51 @@ def get_graph():
 
 ''' HEAP FUNCTIONS '''
 
-def bubble_up(heap,element,index):
+def bubble_up(heap,index,index_map):
 	#while the element is bigger than its parent, we continue going up
-	while (index - 1)//2 >= 0 and element < heap[(index-1)//2]:
+	while (index - 1)//2 >= 0 and heap[index][1] < heap[(index-1)//2][1]:
 		heap[(index-1)//2], heap[index] = heap[index], heap[(index-1)//2]
+		index_map[heap[(index-1)//2][0]], index_map[heap[index][0]] = index_map[heap[index][0]], index_map[heap[(index-1)//2][0]]
 		index = (index-1)//2
 	return index
 
 def min_child(heap,index):
 	if index*2 + 2 < len(heap):
-		if heap[index] > heap[index*2+1] or heap[index] > heap[index*2+2]:
-			if heap[index*2 + 1] < heap[index*2+2]:
+		if heap[index][1] > heap[index*2+1][1] or heap[index][1] > heap[index*2+2][1]:
+			if heap[index*2 + 1][1] < heap[index*2+2][1]:
 				return index*2+1
 			else:
 				return index*2+2
 	else:
-		if heap[index] > heap[index*2+1]:
+		if heap[index][1] > heap[index*2+1][1]:
 			return index*2 + 1
 	return False
 
-def bubble_down(heap,element,index):
+def bubble_down(heap,index,index_map):
 	while index*2+2 <= len(heap):
 		to_swap_with = min_child(heap,index)
 		if to_swap_with != False:
 			heap[index], heap[to_swap_with] = heap[to_swap_with], heap[index]
+			index_map[heap[index][0]], index_map[heap[to_swap_with][0]] = index_map[heap[to_swap_with][0]], index_map[heap[index][0]]  
 			index = to_swap_with
 		else:
 			break
 	return index
 
-def insert(heap, element):
-	heap.append(element)
-	index = bubble_up(heap,element,len(heap)-1)
-	return index
+def extract(array,index_map):
+	if len(array) == 1:
+		to_return = array.pop()
+	else:
+		to_return = array[0]
+		array[0] = array.pop()
+		bubble_down(heap,0,index_map)
+	return to_return	
 
-def extract(heap):
-	pass
-
-def build(heap,index_map):
-	pass
+def build(array,index_map):
+	size = len(array)
+	for i in xrange((size)//2, -1,-1):
+		bubble_down(array, i,index_map)
+	return array
 
 ''' GRAPH BUILDING '''
 
@@ -115,6 +121,18 @@ for index in xrange(len(database)):
 
 
 for graph in database:
-	predecessors = {key:key for key in graph}
-	distances = {key:sys.maxsize for key in graph}
-	distances[0] = 0
+	predecessors = {}
+	distances = []
+	for vertex in graph:
+		if vertex == 1:
+			distances.append([1,0])
+			predecessors[vertex] = vertex
+		else:
+			distances.append([vertex,sys.maxsize])
+			predecessors[vertex] = vertex
+	index_map = {distances[index][0]:index for index in xrange(len(distances))}
+	distances = build(distances,index_map)
+	while distances:
+		node,node_distance = extract(distances,index_map)
+		for edge in graph[node]:
+			pass
