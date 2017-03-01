@@ -25,11 +25,6 @@ from collections import deque
 def get_name(row,col):
 	return row*10+col+1
 
-def get_permission(row,col):
-	if row < 0 or row > 9 or col < 0 or col > 9:
-		return False
-	return row,col
-
 def get_graph():
 	graph = {}
 
@@ -48,6 +43,50 @@ def get_graph():
 			else:
 				graph[vertex][1].append(get_name(i+1,0))
 	return graph
+
+''' HEAP FUNCTIONS '''
+
+def bubble_up(heap,element,index):
+	#while the element is bigger than its parent, we continue going up
+	while (index - 1)//2 >= 0 and element < heap[(index-1)//2]:
+		heap[(index-1)//2], heap[index] = heap[index], heap[(index-1)//2]
+		index = (index-1)//2
+	return index
+
+def min_child(heap,index):
+	if index*2 + 2 < len(heap):
+		if heap[index] > heap[index*2+1] or heap[index] > heap[index*2+2]:
+			if heap[index*2 + 1] < heap[index*2+2]:
+				return index*2+1
+			else:
+				return index*2+2
+	else:
+		if heap[index] > heap[index*2+1]:
+			return index*2 + 1
+	return False
+
+def bubble_down(heap,element,index):
+	while index*2+2 <= len(heap):
+		to_swap_with = min_child(heap,index)
+		if to_swap_with != False:
+			heap[index], heap[to_swap_with] = heap[to_swap_with], heap[index]
+			index = to_swap_with
+		else:
+			break
+	return index
+
+def insert(heap, element):
+	heap.append(element)
+	index = bubble_up(heap,element,len(heap)-1)
+	return index
+
+def extract(heap):
+	pass
+
+def build(heap,index_map):
+	pass
+
+''' GRAPH BUILDING '''
 
 tests = int(raw_input().strip())
 database = []
@@ -74,3 +113,8 @@ for index in xrange(len(database)):
 	for value in ladders[index]:
 		database[index][value[0]][1].append(value[1])
 
+
+for graph in database:
+	predecessors = {key:key for key in graph}
+	distances = {key:sys.maxsize for key in graph}
+	distances[0] = 0
