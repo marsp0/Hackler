@@ -36,12 +36,12 @@ def get_graph():
 	for vertex in graph:
 		i,j = graph[vertex][0]
 		if j < 9:
-			graph[vertex][1].append(get_name(i,j+1))
+			graph[vertex][1].append((get_name(i,j+1),1))
 		else:
 			if i == 9 and j == 9:
 				pass
 			else:
-				graph[vertex][1].append(get_name(i+1,0))
+				graph[vertex][1].append((get_name(i+1,0),1))
 	return graph
 
 ''' HEAP FUNCTIONS '''
@@ -83,7 +83,7 @@ def extract(array,index_map):
 	else:
 		to_return = array[0]
 		array[0] = array.pop()
-		bubble_down(heap,0,index_map)
+		bubble_down(array,0,index_map)
 	return to_return	
 
 def build(array,index_map):
@@ -115,24 +115,35 @@ for index in xrange(tests):
 
 for index in xrange(len(database)):
 	for value in snakes[index]:
-		database[index][value[0]][1].append(value[1])
+		database[index][value[0]][1].append((value[1],0))
 	for value in ladders[index]:
-		database[index][value[0]][1].append(value[1])
+		database[index][value[0]][1].append((value[1],0))
 
 
 for graph in database:
+	
 	predecessors = {}
 	distances = []
+	distances_dict = {}
 	for vertex in graph:
 		if vertex == 1:
 			distances.append([1,0])
 			predecessors[vertex] = vertex
+			distances_dict[1] = 0
 		else:
 			distances.append([vertex,sys.maxsize])
 			predecessors[vertex] = vertex
+			distances_dict[vertex] = sys.maxsize
 	index_map = {distances[index][0]:index for index in xrange(len(distances))}
 	distances = build(distances,index_map)
 	while distances:
 		node,node_distance = extract(distances,index_map)
-		for edge in graph[node]:
-			pass
+		for edge in graph[node][1]:
+			if node_distance+edge[1] < distances_dict[edge[0]]:
+				distances_dict[edge[0]] = node_distance+edge[1]
+				distances[index_map[edge[0]]][1] = node_distance+edge[1]
+				print 'was here'
+				predecessors[edge[0]] = node
+				bubble_up(distances,index_map[edge[0]], index_map)
+	print predecessors
+	print distances_dict
