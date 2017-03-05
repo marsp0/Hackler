@@ -19,15 +19,15 @@ result = 0
 while min_values:
 	node = min(min_values.items(), key = lambda x: x[1][1])
 	del min_values[node[0]]
-	print node
+	#print node, ' is current'
 	result += node[1][1]
 	for edge in graph[node[0]]:
-		print 'was here'
-		try:
-			if node[1][1] < min_values[edge][1]:
-				print 'dsa'
-				min_values[edge] = [edge,node[1][1]]
-		except KeyError:
-			continue
+		#print ' considering ',edge
+		if edge in min_values:
+			if graph[node[0]][edge] < min_values[edge][1]:
+				#print min_values
+				#print 'replacing ',edge
+				#print 'new is ', graph[node[0]][edge], ' old is ', min_values[edge]
+				min_values[edge] = [edge,graph[node[0]][edge]]
 
 print result
