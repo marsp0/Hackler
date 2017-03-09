@@ -38,13 +38,22 @@ for i in xrange(m):
 
 edges = sorted(edges,key = lambda x: x[2])
 union_find = UnionFind(n)
-database = {}
+results = []
 for edge in edges:
 	a,b,w = edge
 	if not union_find.find(a-1,b-1):
-		if a in database:
-			database[b] = (a,w)
-		else:
-			database[a] = (b,w)
+		results.append(edge)
 		union_find.union(a-1,b-1)
-print database
+
+new_graph = {key:{} for key in xrange(1,n+1)}
+for edge in results:
+	a,b,w = edge
+	new_graph[a][b] = w
+	new_graph[b][a] = w
+
+# current idea is to bfs from evry vertex and then not check the ones that have already been checked
+
+for i in xrange(n+1):
+	priority_q = [i]
+	while priority_q:
+		node = priority_q.pop(0)
