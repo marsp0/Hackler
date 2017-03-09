@@ -1,3 +1,5 @@
+#fish = open('test.txt','r')
+#n,m = [int(v) for v in fish.readline().strip().split()]
 n,m = [int(v) for v in raw_input().strip().split()]
 edges = []
 
@@ -33,8 +35,8 @@ class UnionFind:
 
 for i in xrange(m):
 	a,b,power = [int(v) for v in raw_input().strip().split()]
-	w = 1 << power
-	edges.append((a,b,w))
+	#a,b,power = [int(v) for v in fish.readline().strip().split()]
+	edges.append((a,b,power))
 
 edges = sorted(edges,key = lambda x: x[2])
 union_find = UnionFind(n)
@@ -60,15 +62,16 @@ for i in xrange(1,n+1):
 	while priority_q:
 		node = priority_q.pop(0)
 		if node == i:
-			distances[(i,node)] = 0
+			distances[(i,node)] = [(0,0)]
 		visited[node] = True
 		for edge in new_graph[node]:
 			if edge not in visited:
 				if edge > i:
 					if (i,node) in distances:
-						distances[(i,edge)] = distances[(i,node)] + new_graph[node][edge]
+						distances[(i,edge)] = list(distances[(i,node)])
+						distances[(i,edge)].append((node,edge))
 					else:
-						distances[(i,edge)] = distances[(node,i)] + new_graph[node][edge]
+						distances[(i,edge)] = list(distances[(node,i)])
+						distances[(i,edge)].append((node,edge))
 				priority_q.append(edge)
 
-print bin(sum(distances.values()))[2:]
