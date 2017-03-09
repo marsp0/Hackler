@@ -53,31 +53,43 @@ def build(array,index_map):
 ''' END OF HEAP '''
 
 n, m = [int(v) for v in raw_input().strip().split()]
+#fish = open('test.txt', 'r')
+#n, m = [int(v) for v in fish.readline().strip().split()]
 graph = {key:{} for key in xrange(1,n+1)}
 
 for i in xrange(m):
 	a,b,w = [int(v) for v in raw_input().strip().split()]
+	#a,b,w = [int(v) for v in fish.readline().strip().split()]
 	graph[a][b] = w
 
 queries = int(raw_input().strip())
+#queries = int(fish.readline().strip())
 
-result = 0
+result = []
+database = {} 
 for query in xrange(queries):
 	distances = {key:sys.maxsize for key in xrange(1,n+1)}
 	a,b = [int(v) for v in raw_input().strip().split()]
-	distances[a] = 0
-	heap = [[key, distances[key]] for key in xrange(1,n+1)]
-	index_map = {key:key-1 for key in xrange(1,n+1)}
-	heap = build(heap, index_map)
-	while heap:
-		node, node_size = extract(heap,index_map)
-		for edge in graph[node]:
-			if distances[node] + graph[node][edge] < distances[edge]:
-				distances[edge] = distances[node] + graph[node][edge]
-				heap[index_map[edge]][1] = distances[node] + graph[node][edge]
-				bubble_up(heap,index_map[edge], index_map)
-	if distances[b] == sys.maxsize:
-		print -1
+	#a,b = [int(v) for v in fish.readline().strip().split()]
+	if (a,b) not in database:
+		distances[a] = 0
+		heap = [[key, distances[key]] for key in xrange(1,n+1)]
+		index_map = {key:key-1 for key in xrange(1,n+1)}
+		heap = build(heap, index_map)
+		while heap:
+			node, node_size = extract(heap,index_map)
+			for edge in graph[node]:
+				if distances[node] + graph[node][edge] < distances[edge]:
+					distances[edge] = distances[node] + graph[node][edge]
+					heap[index_map[edge]][1] = distances[node] + graph[node][edge]
+					bubble_up(heap,index_map[edge], index_map)
+		if distances[b] == sys.maxsize:
+			result.append(-1)
+		else:
+			result.append(distances[b])
+		database[(a,b)] = result[-1]
 	else:
-		print distances[b]
+		result.append(database[(a,b)])
 
+for item in result:
+	print item
