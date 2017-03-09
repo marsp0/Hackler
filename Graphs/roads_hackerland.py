@@ -54,7 +54,6 @@ for edge in results:
 	new_graph[b][a] = w
 
 # current idea is to bfs from evry vertex and then not check the ones that have already been checked
-result = 0
 distances = {}
 for i in xrange(1,n+1):
 	priority_q = [i]
@@ -74,4 +73,12 @@ for i in xrange(1,n+1):
 						distances[(i,edge)] = list(distances[(node,i)])
 						distances[(i,edge)].append((node,edge))
 				priority_q.append(edge)
+result = 0
+for vertex in distances:
+	for edge in distances[vertex]:
+		if edge != (0,0):
+			a,b = edge
+			temp = new_graph[a][b]
+			result += 1 << temp
 
+print bin(result)[2:]
