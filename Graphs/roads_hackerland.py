@@ -1,3 +1,5 @@
+'''https://www.hackerrank.com/challenges/johnland'''
+
 #fish = open('test.txt','r')
 #n,m = [int(v) for v in fish.readline().strip().split()]
 n,m = [int(v) for v in raw_input().strip().split()]
@@ -59,12 +61,10 @@ for edge in results:
 stack = [1]
 child_number = {}
 visited = {}
+inside = {1:True}
 print new_graph
 while stack:
-	print visited
-	print child_number
 	node = stack[-1]
-	print node
 	if len(new_graph[node]) == 1 and node != 1:
 		child_number[node] = 1
 		visited[node] = True
@@ -77,23 +77,34 @@ while stack:
 				result += child_number[edge]
 			except KeyError:
 				temp.append(edge)
-		if len(temp) == 1:
+		if len(temp) <= 1:
 			if node != 1:
 				child_number[node] = result
 				visited[node] = True
 				stack.pop()
 			else:
 				result = 1
-				print 'dsa'
+				temp_1 = 0
 				for edge in new_graph[1]:
 					try:
 						result += child_number[edge]
 					except KeyError:
+						temp_1 += 1
 						break
-				child_number[1] = result
-				stack.pop()
-		print stack
+				if temp_1 == 0:
+					child_number[1] = result
+					stack.pop()
+					temp = []
 		for edge in temp:
-			stack.append(edge)
-
-print child_number
+			if not edge in inside:
+				stack.append(edge)
+				inside[edge] = True
+result = 0
+for vertex in new_graph:
+	for edge in new_graph[vertex]:
+		if child_number[vertex] < child_number[edge]:
+			main = child_number[vertex]
+		else:
+			main = child_number[edge]
+		result += (1<<new_graph[vertex][edge])*(n-main)*main
+print bin(result/2)[2:]
