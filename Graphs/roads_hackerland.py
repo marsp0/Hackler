@@ -53,32 +53,47 @@ for edge in results:
 	new_graph[a][b] = w
 	new_graph[b][a] = w
 
-# current idea is to bfs from evry vertex and then not check the ones that have already been checked
-distances = {}
-for i in xrange(1,n+1):
-	priority_q = [i]
-	visited = {}
-	while priority_q:
-		node = priority_q.pop(0)
-		if node == i:
-			distances[(i,node)] = [(0,0)]
+#IDEA TAKEN FROM THE DISCUSSION FORUM : Use DFS from a certain node (just 1, so its already better than the previous)
+#and keep track of how many children (self included) each vertex has. The amount of times an edge is used
+# is equal to (n-num_children)*num_children
+stack = [1]
+child_number = {}
+visited = {}
+print new_graph
+while stack:
+	print visited
+	print child_number
+	node = stack[-1]
+	print node
+	if len(new_graph[node]) == 1 and node != 1:
+		child_number[node] = 1
 		visited[node] = True
+		stack.pop()
+	else:
+		temp = []
+		result = 1
 		for edge in new_graph[node]:
-			if edge not in visited:
-				if edge > i:
-					if (i,node) in distances:
-						distances[(i,edge)] = list(distances[(i,node)])
-						distances[(i,edge)].append((node,edge))
-					else:
-						distances[(i,edge)] = list(distances[(node,i)])
-						distances[(i,edge)].append((node,edge))
-				priority_q.append(edge)
-result = 0
-for vertex in distances:
-	for edge in distances[vertex]:
-		if edge != (0,0):
-			a,b = edge
-			temp = new_graph[a][b]
-			result += 1 << temp
+			try:
+				result += child_number[edge]
+			except KeyError:
+				temp.append(edge)
+		if len(temp) == 1:
+			if node != 1:
+				child_number[node] = result
+				visited[node] = True
+				stack.pop()
+			else:
+				result = 1
+				print 'dsa'
+				for edge in new_graph[1]:
+					try:
+						result += child_number[edge]
+					except KeyError:
+						break
+				child_number[1] = result
+				stack.pop()
+		print stack
+		for edge in temp:
+			stack.append(edge)
 
-print bin(result)[2:]
+print child_number
