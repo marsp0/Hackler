@@ -55,19 +55,58 @@ for v in graph:
 # A: Using a hash table to keep track of the already used identifiers
 #
 
-scc_graph = {}				#will be of the form root : [counter, hash table for the edges?]
+def get_scc_root(node):
+	return already_in_scc[node]
+
+scc_graph = {}				#will be of the form root : [counter, list for the edges]
 already_in_scc = {}			#will be of the form identifier : root
+
+print 'index_db ',index_database
 for v in index_database:
 	identifier = index_database[v][0][1]
 	if identifier in already_in_scc:
 		root = already_in_scc[identifier]
 		scc_graph[root][0] += 1
-		for edge in index_database[v][1]:
-			#check to see if the edge is actually in the same SCC
-			if index_database[edge][0][1] != identifier:
-				scc_graph[root][1].append(edge)
-	# we have not yet seen components of that SCC
 	else:
 		already_in_scc[identifier] = v
 		#the counter to check for cycles and the list for the outgoing edges
 		scc_graph[v] = [1,[]]
+
+# what we did here is the following: 
+# 1. in the previous iteration over the vertices of the index_database we were falling in the situation
+#		where we want to add edge to a non existent SCC
+# 2. Instead of saving them in a temp array we can just not add them. The extra array would create a mess
+# 3. We run another iteration over the values and now all the SCCs are created so no issues
+#
+print scc_graph
+print 'dsa'
+print already_in_scc
+print
+for value in index_database.values():
+	for edge in value[1]:
+		root = already_in_scc[value[0][1]]
+		try:
+			#sadly we need to do a linear search to see if the edge is already present
+			#we avoid max recursion this way, but it might time out because of it.
+			# TODO : refactor/optimize
+			if not root in scc_graph[edge][1]:
+				scc_graph[edge][1].append(root)
+		except KeyError:
+			identifier = index_database[edge][0][1]	
+			root = already_in_scc[identifier]
+			scc_graph[root][1].append(root)
+# The idea now is to use another DFS with memoization
+print scc_graph
+memo = {1:1}	#dict for the amount of ways to get to that node
+def get_value(memo,graph,node):
+	if node in memo:
+		return memo[node]
+	else:
+		result = 0
+		for edge in graph[node][1]:		#[1] because the first element is the SCC counter
+			result += get_value(memo,graph,edge)
+		memo[node] = result
+		return result
+
+get_value(memo,scc_graph,n)
+print int(memo[n] % (math.pow(10,9)))
