@@ -4,19 +4,33 @@ n,m = [int(v) for v in raw_input().strip().split()]
 graph = {key:[] for key in xrange(1,n+1)}
 for i in xrange(m):
 	a,b = [int(v) for v in raw_input().strip().split()]
-	graph[b].append(a)
+	graph[a].append(b)
 
-memo = {1:1}
+# The first idea here is to build a new graph from the SCCs of the old using Tarjan's algorithm. Can be found 
+# here : https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-def get_value(memo,graph,node):
-	if node in memo:
-		return memo[node]
-	else:
-		result = 0
-		for edge in graph[node]:
-			result += get_value(memo,graph,edge)
-		memo[node] = result
-		return result
+#book keeping
+index = 0
+stack = []
+index_database = {}
+on_stack = {}
 
-get_value(memo,graph,n)
-print int(memo[n]%(math.pow(10,9)))
+def strongly_connect(v):
+	global index, on_stack, index_database
+	index_database[v] = [index,index] #first is index, second is lowling or the component index
+	index += 1
+	stack.append(v)
+	on_stack[v] = True
+
+	for edge in graph[v]:
+		if not (edge in index_database):
+			strongly_connect(edge)
+			index_database[v][1] = min(index_database[v][1], index_database[edge][1])
+		else:
+			index_database[v][1] = min(index_database[v][1], index_database[edge][1])
+
+	if index_database[v][1] == index_database[v][0]:
+		pass
+
+
+for v in graph:
