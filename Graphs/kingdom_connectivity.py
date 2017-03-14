@@ -1,4 +1,5 @@
 import math
+import copy
 
 ''' Challenge link : https://www.hackerrank.com/challenges/kingdom-connectivity'''
 
@@ -61,7 +62,6 @@ def get_scc_root(node):
 scc_graph = {}				#will be of the form root : [counter, list for the edges]
 already_in_scc = {}			#will be of the form identifier : root
 
-print 'index_db ',index_database
 for v in index_database:
 	identifier = index_database[v][0][1]
 	if identifier in already_in_scc:
@@ -78,25 +78,19 @@ for v in index_database:
 # 2. Instead of saving them in a temp array we can just not add them. The extra array would create a mess
 # 3. We run another iteration over the values and now all the SCCs are created so no issues
 #
-print scc_graph
-print 'dsa'
-print already_in_scc
-print
+
+scc_graph_forward = copy.deepcopy(scc_graph)  #will keep the graph with the forward edges. A -> B is under scc_graph_forward[A]
 for value in index_database.values():
 	for edge in value[1]:
 		root = already_in_scc[value[0][1]]
-		try:
-			#sadly we need to do a linear search to see if the edge is already present
-			#we avoid max recursion this way, but it might time out because of it.
-			# TODO : refactor/optimize
-			if not root in scc_graph[edge][1]:
+		if index_database[edge][0][1] != value[0][1]:
+			try:
 				scc_graph[edge][1].append(root)
-		except KeyError:
-			identifier = index_database[edge][0][1]	
-			root = already_in_scc[identifier]
-			scc_graph[root][1].append(root)
+				scc_graph_forward[root][1].append(edge)
+			except KeyError:
+				edge = already_in_scc[index_database[edge][0][1]]
+				scc_graph[edge][1].append(root)
 # The idea now is to use another DFS with memoization
-print scc_graph
 memo = {1:1}	#dict for the amount of ways to get to that node
 def get_value(memo,graph,node):
 	if node in memo:
@@ -108,5 +102,39 @@ def get_value(memo,graph,node):
 		memo[node] = result
 		return result
 
-get_value(memo,scc_graph,n)
-print int(memo[n] % (math.pow(10,9)))
+# This is for step 2
+cycles = {}		#a dict to save the vertices that represent cycles
+
+stack = [n]
+visited = {} 	#NOTE :do we really nead it ?
+while stack:
+	node = stack.pop()
+	if scc_graph[node][0] > 1:
+		cycles[node] = True
+	for edge in scc_graph[node][1]:
+		if edge not in visited:
+			stack.append(edge)
+			visited[edge] = True
+
+forward_cycles = {}
+stack = [1]
+visited = {} 	#NOTE :do we really nead it ?
+while stack:
+	node = stack.pop()
+	if scc_graph_forward[node][0] > 1:
+		forward_cycles[node] = True
+	for edge in scc_graph_forward[node][1]:
+		if edge not in visited:
+			stack.append(edge)
+			visited[edge] = True
+
+result = ''
+for item in forward_cycles:
+	if item in cycles:
+		result = 'INFINITE PATHS'
+
+if result != 'INFINITE PATHS':
+	get_value(memo,scc_graph,n)
+	print int(memo[n] % (math.pow(10,9)))
+else:
+	print result
