@@ -1,5 +1,6 @@
 import math
 import copy
+import sys
 
 ''' Challenge link : https://www.hackerrank.com/challenges/kingdom-connectivity'''
 
@@ -92,15 +93,21 @@ for value in index_database.values():
 				scc_graph[edge][1].append(root)
 # The idea now is to use another DFS with memoization
 memo = {1:1}	#dict for the amount of ways to get to that node
+
+# This needs to happen in bottom up
 def get_value(memo,graph,node):
 	if node in memo:
 		return memo[node]
 	else:
 		result = 0
 		for edge in graph[node][1]:		#[1] because the first element is the SCC counter
-			result += get_value(memo,graph,edge)
+			result += (get_value(memo,graph,edge) % math.pow(10,9))
 		memo[node] = result
 		return result
+
+#def get_value(memo,graph,node):
+	''' the idea here is to implement the same function as before, but starting from 1 instead of n'''
+#	pass
 
 # This is for step 2
 cycles = {}		#a dict to save the vertices that represent cycles
