@@ -1,6 +1,6 @@
 import math
 import copy
-import sys
+from collections import deque
 
 ''' Challenge link : https://www.hackerrank.com/challenges/kingdom-connectivity'''
 
@@ -46,17 +46,6 @@ for v in graph:
 	if not (v in index_database):
 		strongly_connect(v)
 
-#what do we need to do now
-# Q. Figure out how to construct the new graph G' and what info is going in it (how do we represent SCC)
-#
-# A: iterate over the keys of the index_database and let the first new SCC be the root.
-# 		Every other element from the same SCC will just increment a counter, this way
-#		we can check afterwards if the given G' vertex is a cycle or not.
-#
-# Q. How do we check if an SCC identifier has already been inserted in the graph ?
-# A: Using a hash table to keep track of the already used identifiers
-#
-
 def get_scc_root(node):
 	return already_in_scc[node]
 
@@ -70,15 +59,8 @@ for v in index_database:
 		scc_graph[root][0] += 1
 	else:
 		already_in_scc[identifier] = v
-		#the counter to check for cycles and the list for the outgoing edges
-		scc_graph[v] = [1,[]]
+		scc_graph[v] = [1,[], []]
 
-# what we did here is the following: 
-# 1. in the previous iteration over the vertices of the index_database we were falling in the situation
-#		where we want to add edge to a non existent SCC
-# 2. Instead of saving them in a temp array we can just not add them. The extra array would create a mess
-# 3. We run another iteration over the values and now all the SCCs are created so no issues
-#
 
 scc_graph_forward = copy.deepcopy(scc_graph)  #will keep the graph with the forward edges. A -> B is under scc_graph_forward[A]
 for value in index_database.values():
@@ -88,11 +70,13 @@ for value in index_database.values():
 			try:
 				scc_graph[edge][1].append(root)
 				scc_graph_forward[root][1].append(edge)
+				scc_graph_forward[edge][2].append(root)
 			except KeyError:
 				edge = already_in_scc[index_database[edge][0][1]]
 				scc_graph[edge][1].append(root)
+				scc_graph_forward[edge][2].append(root)
 # The idea now is to use another DFS with memoization
-memo = {1:1}	#dict for the amount of ways to get to that node
+memo = {}	#dict for the amount of ways to get to that node
 
 # This needs to happen in bottom up
 def get_value(memo,graph,node):
@@ -105,11 +89,43 @@ def get_value(memo,graph,node):
 		memo[node] = result
 		return result
 
-#def get_value(memo,graph,node):
-	''' the idea here is to implement the same function as before, but starting from 1 instead of n'''
-#	pass
+def get_value_bfs(memo,graph,node):
+	queue = deque([node])
+	in_queue = {key:False for key in xrange(1,n+1)}
+	in_queue[node] = True
+	while queue:
+		if len(memo) == 2501:
+			return False
+		temp = 0
+		node = queue.popleft()
+		in_queue[node] = False
+		if node in memo:
+			continue
+		if node == 1:
+			result = 1
+		else:
+			result = 0
+		for edge in graph[node][2]:		#[1] because the first element is the SCC counter
+			try:
+				result += memo[edge] % math.pow(10,9)
+			except KeyError:
+				if not in_queue[edge]:
+					queue.append(edge)
+					in_queue[edge] = True
+				temp += 1
+				break
+		if temp == 0:
+			memo[node] = result
+		else:
+			if not in_queue[node]:
+				queue.append(node)
+				in_queue[node] = True
+		for edge in graph[node][1]:
+			if not in_queue[edge]:
+				queue.append(edge)
+				in_queue[edge] = True
 
-# This is for step 2
+
 cycles = {}		#a dict to save the vertices that represent cycles
 
 stack = [n]
@@ -141,7 +157,9 @@ for item in forward_cycles:
 		result = 'INFINITE PATHS'
 
 if result != 'INFINITE PATHS':
-	get_value(memo,scc_graph,n)
+	p = get_value_bfs(memo,scc_graph_forward,1)
+	if p != None:
+		get_value(memo,scc_graph,n)
 	print int(memo[n] % (math.pow(10,9)))
 else:
 	print result
