@@ -1,21 +1,21 @@
 from collections import deque
 
+
 tests = int(raw_input().strip())
+#fish = open('test.txt','r')
+#tests = int(fish.readline().strip())
 test_database = []
 for i in xrange(tests):
 	n,m = [int(v) for v in raw_input().strip().split()]
-	temp = {key:{} for key in xrange(1,n+1)}
+	#n,m = [int(v) for v in fish.readline().strip().split()]
+	graph = {key:{} for key in xrange(1,n+1)}
 	for j in xrange(m):
 		a,b = [int(v) for v in raw_input().strip().split()]
-		temp[a][b] = 0
-		temp[b][a] = 0
+		#a,b = [int(v) for v in fish.readline().strip().split()]
+		graph[a][b] = 0
+		graph[b][a] = 0
 	start_node = int(raw_input().strip())
-	graph = {key:{} for key in xrange(1,n+1)}
-	for key in temp:
-		for i in xrange(1,n+1):
-			if not i in temp[key] and not i in graph[key] and i != key:
-				graph[key][i] = 0
-				graph[i][key] = 0
+	#start_node = int(fish.readline().strip())
 	test_database.append((graph,start_node))
 
 for test in test_database:
@@ -40,8 +40,11 @@ for test in test_database:
 			if not key in visited:
 				distances[key] = distances[u] + 1
 				queue.append(key)
+				visited[key] = True
 		colors[u] = 3
 		before_list = after_list
 		after_list = {}
-
-	print distances
+	for i in xrange(1,len(graph)+1):
+		if i != start_node:
+			print distances[i],
+	print
