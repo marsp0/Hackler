@@ -21,5 +21,13 @@ scores = list(reversed(scores))
 
 for element in alice:
 	index = bisect.bisect_right(scores,element)
-	print scores, element
-	print database[scores[index-1]][1]
+	#print scores, element, index
+	if index == 0:
+		index += 1
+	if place-1 == database[scores[index-1]][1]:
+		if scores[index-1] <= element:
+			print place - 1
+		else:
+			print place
+	else:
+		print database[scores[index-1]][1]
