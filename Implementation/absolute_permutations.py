@@ -39,25 +39,23 @@ for test in test_database:
 				doubles.append(i)
 	index = 0
 	while doubles:
-		print index, doubles, results
 		try:
 			position_number = doubles[index]
-			print position_number
-			possible_numbers = positions[doubles[index]]
-			print possible_numbers
+			possible_numbers = positions[position_number]
 			for item in xrange(len(possible_numbers)):
-				print possible_numbers[item], placed, 'dsads'
 				if possible_numbers[item] in placed:
-					print 'was here'
 					if item == 0:
-						results[position_number] = possible_numbers[item+1]
+						results[position_number-1] = possible_numbers[item+1]
 						placed[possible_numbers[item+1]] = True
-						doubles.pop(index)
 					else:
-						results[position_number] = possible_numbers[item-1]
+						results[position_number-1] = possible_numbers[item-1]
 						placed[possible_numbers[item-1]] = True
-						doubles.pop(index)
+					doubles.pop(index)
+					break
 			index += 1
 		except IndexError:
 			index = 0
-	print results
+	for item in results:
+		print item,
+	print n,k
+	print
