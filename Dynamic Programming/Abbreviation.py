@@ -1,39 +1,49 @@
+import sys
+
+sys.setrecursionlimit(100000)
+
 #n = int(raw_input().strip())
 fish = open('test.txt','r')
 n = int(fish.readline().strip())
-database = []
 
-def check(string1, string2, memo):
-	if (len(string1)-1,len(string2)-1) in memo:
-		return memo[(len(string1)-1,len(string2)-1)]
+def check(end1,end2,string1,string2, memo):
+	if (end1,end2) in memo:
+		return memo[(end1,end2)]
 	else:
-		if string1 == '' or string2 == '':
-			if string1 == '' and string2:
-				if string2[-1] == string2[-1].upper():
-					print string2[-1]
-			elif string2 == '' and string1:
-				if string1[-1] == string1[-1].upper():
-					print string1[-1]
-			memo[(len(string1)-1,len(string2)-1)] = 0
-			return memo[(len(string1)-1,len(string2)-1)]
-		elif string1[-1].lower() == string2[-1].lower():
-			memo[(len(string1)-1,len(string2)-1)] =  1 + check(string1[:-1],string2[:-1],memo)
-			return memo[(len(string1)-1,len(string2)-1)]
+		if string1[:end1+1] == '' or string2[:end2+1] == '':
+			memo[(end1,end2)] = 0
+		elif string1[end1].lower() == string2[end2].lower():
+			if string1[end1] == string1[end1].lower():
+				first = 1+check(end1-1,end2-1,string1,string2,memo)
+				second = check(end1-1,end2,string1,string2,memo)
+				if second >= first:
+					memo[(end1,end2)] = second
+				else:
+					memo[(end1,end2)] = first					
+			else:
+				memo[(end1,end2)] = 1 + check( end1-1, end2-1,string1,string2,memo)
 		else:
-			temp = max(check(string1[:-1],string2,memo), check(string1,string2[:-1],memo))
-			memo[(len(string1)-1,len(string2)-1)] = temp
-			return memo[(len(string1)-1,len(string2)-1)]
+			memo[(end1,end2)] = check(end1-1,end2,string1,string2,memo)
+	return memo[(end1,end2)]
 
 for i in xrange(0,n):
 	#string1 = raw_input().strip()
 	#string2 = raw_input().strip()
 	string1 = fish.readline().strip()
 	string2 = fish.readline().strip()
-	# key - ith row and jth column in the table
-	# value - len of the LCS
-	memo = {}
-	#already checked is a hashtable in the form
-	# key - 'bi' - b is the letter and i is the index
-	# value - bool
-	check(string1,string2,memo)
-	print memo[(len(string1)-1, len(string2)-1)]
+	initial_memo = {}
+	upper_letters = []
+	for i in xrange(len(string1)):
+		if string1[i] == string1[i].upper():
+			upper_letters.append(string1[i])
+	check(len(string2)-1,len(upper_letters)-1,string2,''.join(upper_letters),initial_memo)
+	if initial_memo[(len(string2)-1,len(upper_letters)-1)] != len(upper_letters):
+		print 'NO'
+	else:
+		memo = {}
+		check(len(string1)-1,len(string2)-1,string1,string2,memo)
+		if memo[(len(string1)-1,len(string2)-1)] != len(string2):
+			print 'NO'
+		else:
+			print memo[(len(string1)-1,len(string2)-1)]
+			print 'YES'
