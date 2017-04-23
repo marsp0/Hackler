@@ -1,3 +1,5 @@
+'''https://www.hackerrank.com/challenges/abbr'''
+
 import sys
 
 sys.setrecursionlimit(100000)
@@ -6,44 +8,55 @@ sys.setrecursionlimit(100000)
 fish = open('test.txt','r')
 n = int(fish.readline().strip())
 
-def check(end1,end2,string1,string2, memo):
-	if (end1,end2) in memo:
-		return memo[(end1,end2)]
+def checker(string1,string2,memo):
+	if (len(string1)-1,len(string2)-1) in memo:
+		return memo[(len(string1)-1,len(string2)-1)]
 	else:
-		if string1[:end1+1] == '' or string2[:end2+1] == '':
-			memo[(end1,end2)] = 0
-		elif string1[end1].lower() == string2[end2].lower():
-			if string1[end1] == string1[end1].lower():
-				first = 1+check(end1-1,end2-1,string1,string2,memo)
-				second = check(end1-1,end2,string1,string2,memo)
-				if second >= first:
-					memo[(end1,end2)] = second
-				else:
-					memo[(end1,end2)] = first					
+		if len(string2) > len(string1):
+			memo[(len(string1)-1,len(string2)-1)] = False
+			return False
+		elif string1 == '':
+			if string2 == '':
+				memo[(0,0)] = True
+				return True	
+			memo[(0,len(string2)-1)] = False
+			return False
+		elif string2 == '':
+			for item in string1:
+				if item == item.upper():
+					memo[(len(string1)-1,0)] = False
+					return False
+			memo[(len(string1)-1,0)] = True
+			return True
+		elif string1[-1] == string1[-1].upper():
+			if string1[-1] != string2[-1]:
+				memo[(len(string1)-1,len(string2)-1)] = False
+				return False
 			else:
-				memo[(end1,end2)] = 1 + check( end1-1, end2-1,string1,string2,memo)
+				memo[(len(string1)-1,len(string2)-1)] = checker(string1[:-1],string2[:-1],memo)
+				return memo[(len(string1)-1,len(string2)-1)]
 		else:
-			memo[(end1,end2)] = check(end1-1,end2,string1,string2,memo)
-	return memo[(end1,end2)]
+			if string1[-1].lower() == string2[-1].lower():
+				without = checker(string1[:-1],string2,memo)
+				with_ = checker(string1[:-1],string2[:-1],memo)
+				if without:
+					memo[(len(string1)-1, len(string2)-1)] = without
+					return without
+				memo[(len(string1)-1, len(string2)-1)] = with_
+				return with_
+			else:
+				memo[(len(string1)-1,len(string2)-1)] = checker(string1[:-1],string2,memo)
+				return memo[(len(string1)-1,len(string2)-1)]
+
 
 for i in xrange(0,n):
 	#string1 = raw_input().strip()
 	#string2 = raw_input().strip()
 	string1 = fish.readline().strip()
 	string2 = fish.readline().strip()
-	initial_memo = {}
-	upper_letters = []
-	for i in xrange(len(string1)):
-		if string1[i] == string1[i].upper():
-			upper_letters.append(string1[i])
-	check(len(string2)-1,len(upper_letters)-1,string2,''.join(upper_letters),initial_memo)
-	if initial_memo[(len(string2)-1,len(upper_letters)-1)] != len(upper_letters):
-		print 'NO'
+	memo = {}
+	checker(string1,string2,memo)
+	if memo[(len(string1)-1,len(string2)-1)]:
+		print 'YES'
 	else:
-		memo = {}
-		check(len(string1)-1,len(string2)-1,string1,string2,memo)
-		if memo[(len(string1)-1,len(string2)-1)] != len(string2):
-			print 'NO'
-		else:
-			print memo[(len(string1)-1,len(string2)-1)]
-			print 'YES'
+		print 'NO'
