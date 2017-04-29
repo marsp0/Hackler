@@ -1,8 +1,8 @@
 import math
 
 #Input from the exercise
-input_str = raw_input().strip()
-#input_str = open('test.txt','r').read()
+#input_str = raw_input().strip()
+input_str = open('test.txt','r').read()
 
 #we separate string into and make it a list
 separated_list = []
@@ -33,7 +33,6 @@ result = temp_sum
 
 result = {-1:0}
 for i in xrange(len(separated_list)):
-	print i
 	temp = 10*result[i-1] + (i+1)*int(separated_list[i]) % mod_value
 	result[i] = temp
 

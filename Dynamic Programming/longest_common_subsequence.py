@@ -1,3 +1,5 @@
+'''https://www.hackerrank.com/challenges/dynamic-programming-classics-the-longest-common-subsequence - MEDIUM'''
+
 n,m = [int(v) for v in raw_input().strip().split()]
 
 string_a = [int(v) for v in raw_input().strip().split()]
@@ -18,7 +20,7 @@ def longest_common_sequence(string_a, string_b):
 		for j in xrange(len(string_b)):
 			if string_a[i] == string_b[j]:
 				memo[(i,j)] = 1 + memo[(i-1,j-1)]
-				strings[(i,j)] = strings[(i-1,j-1)] + str(string_a[i])
+				strings[(i,j)] = strings[(i-1,j-1)] + str(string_a[i]) + ' '
 			else:
 				memo[(i,j)] = max(memo[(i-1,j)], memo[(i,j-1)])
 				if memo[(i-1,j)] > memo[(i,j-1)]:
@@ -28,4 +30,4 @@ def longest_common_sequence(string_a, string_b):
 	return memo,strings
 
 memo,strings = longest_common_sequence(string_a, string_b)
-print ' '.join(strings[(len(string_a)-1,len(string_b)-1)])
+print strings[(len(string_a)-1,len(string_b)-1)].strip()

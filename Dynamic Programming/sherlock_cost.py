@@ -1,4 +1,4 @@
-'''https://www.hackerrank.com/challenges/sherlock-and-cost'''
+'''https://www.hackerrank.com/challenges/sherlock-and-cost - MEDIUM '''
 
 tests = int(raw_input().strip())
 
