@@ -1,19 +1,26 @@
-string = raw_input().strip()
-result = ''
+'''https://www.hackerrank.com/challenges/reduced-string - easy'''
+
+array = list(raw_input().strip())
+
 index = 0
-while index < len(string):
-	try:
-		if string[index] == string[index+1]:
-			index += 2
-			continue
+counter = 1
+while array:
+	if index+1 >= len(array):
+		if counter >= 2:
+			break
 		else:
-			result += string[index]
+			index = 0
+			counter += 1
+	else:
+		if array[index] == array[index+1]:
+			array.pop(index)
+			array.pop(index)
+			counter = 0
+		else:
 			index += 1
-	except IndexError:
-		result += string[index]
-		index += 1
-if result == '':
+
+
+if array == []:
 	print 'Empty String'
 else:
-	print result
-
+	print ''.join(array)
